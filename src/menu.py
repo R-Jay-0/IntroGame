@@ -1,7 +1,7 @@
 import pygame
 from Botao import Botao
 from imagens import *
-from var_universais import FPS
+from var_universais import *
 
 # função para gerenciar a tela de menu
 def _menu(display):
@@ -51,7 +51,7 @@ def _menu(display):
                         indice += 1
 
             # não faço ideia do porque os botões só funcionam direito com essa ilha de código 
-            display.fill((0, 0, 0))  
+            display.fill((0, 0, 0))
             display.blit(fundo_menu, (0, 0))
 
             for botao in botoes:

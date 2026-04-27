@@ -2,14 +2,14 @@ import pygame
 from Botao import *
 from menu import _menu
 from selecao import _selecao
-from batalha import _batalhar
+from batalha import _batalhar_1
 from var_universais import *
 
 ########## COMEÇO PROGRAMA #############
 
 pygame.init()
 
-tela = pygame.display.set_mode((1024, 720))
+tela = pygame.display.set_mode((LARGURA, ALTURA))
 
 pygame.display.set_caption("Nome do joojj")
 

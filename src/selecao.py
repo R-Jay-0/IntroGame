@@ -2,6 +2,7 @@ import pygame
 from Botao import Botao
 from imagens import *
 from var_universais import *
+from Personagens import aliados
 
 class Ficha:
     def __init__(self, display, personagem, img_fundo, img_escolhido, endereco, tela):
@@ -79,14 +80,14 @@ def _selecao(display):
     display.fill((0, 0, 0)) # limpar a tela
 
     # Iniciar a tela de seleção com o personagem "Albert Camus"
-    camus = Ficha(display, "Camus", fundo_camus, fotinha_camus, 0, 0)
+    camus = Ficha(display, "Albert Camus", fundo_camus, fotinha_camus, 0, 0)
     camus._mostrar_ficha(0)
 
     # Gerando as fichas dos peronagens
-    copernico = Ficha(display, "Copérnico", fundo_copernico, fotinha_copernico, 0, 1)
-    curie = Ficha(display, "Curie", fundo_curie, fotinha_curie, 0, 2)
+    copernico = Ficha(display, "Nicolau Copérnico", fundo_copernico, fotinha_copernico, 0, 1)
+    curie = Ficha(display, "Marie Curie", fundo_curie, fotinha_curie, 0, 2)
     seneca = Ficha(display, "Sêneca", fundo_seneca, fotinha_seneca, 0, 3)
-    tesla = Ficha(display, "Tesla", fundo_tesla, fotinha_tesla, 0, 4)
+    tesla = Ficha(display, "Nikola Tesla", fundo_tesla, fotinha_tesla, 0, 4)
 
     # criando o botão de return que leva para a tela anterior (menu)
     btn_return = Botao(display, "Return", (900, 620), img_return, 1)
@@ -97,6 +98,9 @@ def _selecao(display):
     # retângulo da imagem de verificação dos personagens selecionados
     rect_verificador = base_verificar_selecao.get_rect(center=(1024//2, 720//2))
 
+    aliados_selecionados.append(aliados[5]) # Adiciona o protagonista na party automaticamente
+
+    supostos_selecionados = []
     fichas = [camus, copernico, curie, seneca, tesla]   # lista com todas as fichas já criadas
     botoes = [btn_return]   # lista com os botões já criados
     tela = 0    # variável para identificar qual ficha deve ser exibida
@@ -111,7 +115,7 @@ def _selecao(display):
                 executando = False
 
             # impede as ações em caso de já ter selecionado os 2 personagens
-            if len(aliados_selecionados) < 2:
+            if len(aliados_selecionados) != 3:
                 # verifica se o evento é uma tecla que foi clicada
                 if event.type == pygame.KEYDOWN:
                     # estrutura circular para controlar a tela (qual personagem está sendo exibido)
@@ -136,7 +140,7 @@ def _selecao(display):
                         if indice == 1:
                             indice = 0
                         else:
-                            indice =1
+                            indice = 1
 
                     # estrutura para tratar o input de confirmação do jogo
                     elif event.key == pygame.K_j:
@@ -145,11 +149,13 @@ def _selecao(display):
                             # identificar qual personagem foi selecionado e adicionar a lista de aliados_selecionados
                             selecionado = _analisar_confirmacao(display, fichas, indice, tela)
                             if selecionado != None:
-                                aliados_selecionados.append(selecionado)
-                        elif indice == 2:
-                            pass
+                                for personagem in aliados:
+                                    if selecionado.personagem == personagem.nome:
+                                        aliados_selecionados.append(personagem)
+                                        supostos_selecionados.append(selecionado)
                         # se o índice estiver no botão return então volta para a tela de menu
                         else:
+                            aliados_selecionados.clear()
                             return 0
 
                     # estrutura para cancelar a seleção caso o persongaem já tenha sido selecionado
@@ -157,9 +163,10 @@ def _selecao(display):
                         # identificar qual personagem foi cancelado e retirar da lista de aliados_selecionados
                         cancelado = _analisar_cancelamento(display, fichas, indice, tela)
                         if cancelado != None:
-                            aliados_selecionados.pop(aliados_selecionados.index(cancelado))
+                            aliados_selecionados.pop(1)
+                            supostos_selecionados.pop(0)
 
-                # desenha a ficaha correspondente na tela de acordo com a variável tela
+                # desenha a ficha correspondente na tela de acordo com a variável tela
                 for ficha in fichas:
                     if ficha.tela == tela:
                         ficha._mostrar_ficha(indice)
@@ -172,7 +179,7 @@ def _selecao(display):
                         botao._nao_indicado()
                     botao._desenhar()
 
-            # caso a quantidade mínima de personagens ainda não tenham sido escolhidas:
+            # caso a quantidade mínima de personagens tenham sido alcançada:
             else:
                 # desenha a ficha correspondente na tela de acordo com a variável tela
                 for ficha in fichas:
@@ -191,8 +198,9 @@ def _selecao(display):
                 display.blit(overlay, (0, 0)) 
                 display.blit(base_verificar_selecao, rect_verificador)
                 # estrutura para desenhar a "fotinha" de cada personagem selecionado
-                for i in range(2):
-                    aliados_selecionados[i]._mostrar_fotinha(i)
+                if supostos_selecionados != None:
+                    for i in range(2):
+                        supostos_selecionados[i]._mostrar_fotinha(i)
 
                 # lidar com os eventos de clique dos botões do teclado
                 if event.type == pygame.KEYDOWN:
